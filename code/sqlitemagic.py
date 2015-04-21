@@ -32,23 +32,23 @@ class SqliteMagic(Magics):
         connection = sqlite3.connect(filename)
         cursor = connection.cursor()
         try:
-	    if query.startswith('.'):
-	        self.meta_command(cursor, query)
-	    else:
+            if query.startswith('.'):
+                self.meta_command(cursor, query)
+            else:
                 cursor.execute(query)
                 results = cursor.fetchall()
                 header = [f[0] for f in cursor.description]
                 display(HTML(self.tablify(results, header)))
-        except Exception, e:
+        except Exception as e:
             print >> sys.stderr, "exception", e
         cursor.close()
         connection.close()
 
     def tablify(self, rows, header=None):
-        if header==None:
-	    header_row = ''
-	else:
-	    header_row = self.rowify_header(header)
+        if header == None:
+            header_row = ''
+        else:
+            header_row = self.rowify_header(header)
         return '<table>\n' + header_row + '\n'.join(self.rowify(r) for r in rows) + '\n</table>'
 
     def rowify(self, row):
@@ -64,14 +64,14 @@ class SqliteMagic(Magics):
     def meta_command(self, cursor, line):
         parts = line.split()
         command = parts[0]
-        if command=='.schema':
-	    if len(parts)>1:
-	        table = parts[1]
-	        select_clause = ' where name="'+table+'"'
-	    else:
-	        select_clause = ''
-	    query = 'select sql from sqlite_master' + select_clause
-	    cursor.execute(query)
+        if command == '.schema':
+            if len(parts)>1:
+                table = parts[1]
+                select_clause = ' where name="'+table+'"'
+            else:
+                select_clause = ''
+            query = 'select sql from sqlite_master' + select_clause
+            cursor.execute(query)
             results = cursor.fetchall()
             display(HTML(self.tablify(results)))
         else:
